@@ -1,0 +1,25 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+*.iml
+.idea/
+.vscode/
+
+# Rust (kept for the future Rust-core path)
+rust/target/
+
+# Local data (ARL vault, cache, DB) — never commit
+*.arl
+hirena_data/
+.vault/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
