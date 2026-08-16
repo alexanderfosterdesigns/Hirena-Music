@@ -9,7 +9,7 @@ final class MediaRow extends StatelessWidget {
     super.key,
     required this.title,
     required this.children,
-    this.height = 240,
+    this.height = 300,
     this.onViewAll,
   });
 

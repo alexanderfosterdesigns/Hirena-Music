@@ -239,7 +239,7 @@ class _ArtistScreenState extends ConsumerState<ArtistScreen> {
         if (d.$3.isNotEmpty)
           MediaRow(
             title: 'Albums',
-            height: 220,
+            height: 300,
             children: [
               for (final a in d.$3.take(25))
                 posterForAlbum(

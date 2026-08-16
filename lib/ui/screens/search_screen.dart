@@ -102,11 +102,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           _sectionTitle('Albums'),
           MediaRow(
             title: 'Albums',
-            height: 220,
+            height: 280,
             children: [
               for (final a in r.albums)
                 posterForAlbum(
                   a,
+                  width: 148,
                   onTap: () => _open(context, AlbumScreen(albumId: a.id)),
                 ),
             ],
@@ -116,11 +117,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           _sectionTitle('Artists'),
           MediaRow(
             title: 'Artists',
-            height: 200,
+            height: 260,
             children: [
               for (final a in r.artists)
                 posterForArtist(
                   a,
+                  width: 130,
                   onTap: () => _open(context, ArtistScreen(artistId: a.id)),
                 ),
             ],
@@ -130,13 +132,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           _sectionTitle('Playlists'),
           MediaRow(
             title: 'Playlists',
-            height: 200,
+            height: 260,
             children: [
               for (final p in r.playlists)
                 PosterCard(
                   title: p.title,
                   subtitle: p.creatorName ?? 'Playlist',
                   coverMd5: p.pictureMd5,
+                  width: 130,
                   onTap: () => _open(context, PlaylistScreen(playlistId: p.id)),
                 ),
             ],

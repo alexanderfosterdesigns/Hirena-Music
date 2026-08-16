@@ -14,6 +14,7 @@ final class HeroBillboard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     this.coverMd5,
+    this.image,
     this.onPlay,
     this.onShuffle,
   });
@@ -21,6 +22,7 @@ final class HeroBillboard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String? coverMd5;
+  final ImageProvider? image;
   final VoidCallback? onPlay;
   final VoidCallback? onShuffle;
 
@@ -38,6 +40,7 @@ final class HeroBillboard extends StatelessWidget {
             key: const ValueKey('hero-art'),
             child: Artwork(
               coverMd5: coverMd5,
+              image: image,
               fit: BoxFit.cover,
               borderRadius: BorderRadius.zero,
             ),

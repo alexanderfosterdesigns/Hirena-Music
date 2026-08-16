@@ -14,6 +14,7 @@ final class PosterCard extends StatefulWidget {
     required this.subtitle,
     this.coverMd5,
     this.artistMd5,
+    this.image,
     this.onTap,
     this.onPlay,
     this.width = 168,
@@ -24,6 +25,7 @@ final class PosterCard extends StatefulWidget {
   final String subtitle;
   final String? coverMd5;
   final String? artistMd5;
+  final ImageProvider? image;
   final VoidCallback? onTap;
   final VoidCallback? onPlay;
   final double width;
@@ -59,6 +61,7 @@ class _PosterCardState extends State<PosterCard> {
                     Artwork(
                       coverMd5: widget.coverMd5,
                       artistMd5: widget.artistMd5,
+                      image: widget.image,
                       width: widget.width,
                       height: height,
                     ),
@@ -121,6 +124,7 @@ final class LandscapeCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     this.coverMd5,
+    this.image,
     this.onTap,
     this.width = 280,
   });
@@ -128,6 +132,7 @@ final class LandscapeCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String? coverMd5;
+  final ImageProvider? image;
   final VoidCallback? onTap;
   final double width;
 
@@ -143,6 +148,7 @@ final class LandscapeCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(HRadii.card),
               child: Artwork(
                 coverMd5: widget.coverMd5,
+                image: widget.image,
                 width: widget.width,
                 height: widget.width / HAspect.landscape,
               ),
@@ -173,20 +179,34 @@ final class LandscapeCard extends StatelessWidget {
 }
 
 /// Converts an [Album] or [Artist] into a poster card.
-Widget posterForAlbum(Album a, {VoidCallback? onTap, VoidCallback? onPlay, double width = 168}) =>
+Widget posterForAlbum(
+  Album a, {
+  VoidCallback? onTap,
+  VoidCallback? onPlay,
+  double width = 168,
+  ImageProvider? image,
+}) =>
     PosterCard(
       title: a.title,
       subtitle: a.artistName,
       coverMd5: a.coverMd5,
+      image: image,
       onTap: onTap,
       onPlay: onPlay,
       width: width,
     );
 
-Widget posterForArtist(Artist a, {VoidCallback? onTap, double width = 168}) => PosterCard(
+Widget posterForArtist(
+  Artist a, {
+  VoidCallback? onTap,
+  double width = 168,
+  ImageProvider? image,
+}) =>
+    PosterCard(
       title: a.name,
       subtitle: 'Artist',
       artistMd5: a.pictureMd5,
+      image: image,
       onTap: onTap,
       width: width,
     );

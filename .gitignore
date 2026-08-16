@@ -32,3 +32,6 @@ Thumbs.db
 # UI mockup renders (inspection artifacts — not source)
 ui-mockups/covers/
 ui-mockups/*.png
+
+# Generated UI screenshots (from test/screenshots) — CI artifacts, not source
+/screenshots/

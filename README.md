@@ -36,6 +36,26 @@ flutter run -d windows
 Paste your Deezer ARL on the first screen (deezer.com → F12 → Application →
 Cookies → deezer.com → copy the `arl` cookie value).
 
+## Rendering the UI (PNG screenshots)
+
+The app's **real Flutter widgets** can be rendered to PNGs through Flutter's own
+rendering engine (no device needed):
+
+```bash
+flutter pub get
+flutter test test/screenshots/screenshots_test.dart
+```
+
+This writes `screenshots/01-home.png` … `07-library.png` (2880×1800). The same
+job runs in CI and uploads a downloadable `ui-renders` artifact on every push.
+
+To capture the *live* app on Windows, run it and use OS screenshot tooling, or:
+
+```bash
+flutter run -d windows
+flutter screenshot          # only supported on mobile/web devices
+```
+
 ## Test & verify
 
 ```bash

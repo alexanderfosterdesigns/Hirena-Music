@@ -87,12 +87,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             if (d.forYou.isNotEmpty)
               MediaRow(
                 title: 'Made for you',
+                height: 280,
                 children: [
                   for (final t in d.forYou)
                     PosterCard(
                       title: t.title,
                       subtitle: t.artistName,
                       coverMd5: t.albumCoverMd5,
+                      width: 148,
                       onTap: () => _openAlbum(context, t.albumId),
                       onPlay: () => app.playTrack(t),
                     ),
@@ -101,12 +103,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             if (d.charts.tracks.isNotEmpty)
               MediaRow(
                 title: 'Top charts',
+                height: 280,
                 children: [
                   for (final t in d.charts.tracks.take(30))
                     PosterCard(
                       title: t.title,
                       subtitle: t.artistName,
                       coverMd5: t.albumCoverMd5,
+                      width: 148,
                       onTap: () => _openAlbum(context, t.albumId),
                       onPlay: () => app.playTrack(t),
                     ),
@@ -115,7 +119,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             if (d.charts.albums.isNotEmpty)
               MediaRow(
                 title: 'Popular albums',
-                height: 260,
+                height: 320,
                 children: [
                   for (final a in d.charts.albums.take(30))
                     posterForAlbum(a, onTap: () => _openAlbum(context, a.id)),
@@ -124,10 +128,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             if (d.charts.artists.isNotEmpty)
               MediaRow(
                 title: 'Popular artists',
-                height: 230,
+                height: 280,
                 children: [
                   for (final a in d.charts.artists.take(30))
-                    posterForArtist(a, onTap: () => _openArtist(context, a.id)),
+                    posterForArtist(a, width: 148, onTap: () => _openArtist(context, a.id)),
                 ],
               ),
             const SizedBox(height: 120),

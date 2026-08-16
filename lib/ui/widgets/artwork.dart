@@ -14,6 +14,7 @@ final class Artwork extends StatelessWidget {
     this.width,
     this.height,
     this.borderRadius,
+    this.image,
   });
 
   final String? coverMd5;
@@ -22,6 +23,10 @@ final class Artwork extends StatelessWidget {
   final double? width;
   final double? height;
   final BorderRadius? borderRadius;
+
+  /// When provided, renders this image instead of the network artwork.
+  /// Used by tests/screenshot harnesses to stay offline & deterministic.
+  final ImageProvider? image;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +37,9 @@ final class Artwork extends StatelessWidget {
         : Art.cover(coverMd5 ?? '', size: Art.sizeFor(size, dpr));
 
     Widget child;
-    if ((coverMd5 == null || coverMd5!.isEmpty) &&
+    if (image != null) {
+      child = Image(image: image, fit: fit, width: width, height: height);
+    } else if ((coverMd5 == null || coverMd5!.isEmpty) &&
         (artistMd5 == null || artistMd5!.isEmpty)) {
       child = const _Placeholder();
     } else {
