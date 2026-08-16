@@ -35,3 +35,6 @@ ui-mockups/*.png
 
 # Generated UI screenshots (from test/screenshots) — CI artifacts, not source
 /screenshots/
+
+# Bundled render archive
+ui-renders.zip

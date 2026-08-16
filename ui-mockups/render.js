@@ -365,9 +365,33 @@ function truncate(font, size, str, maxW, tracking = 0) {
   return s + '…';
 }
 
-// load covers
+// programmatic gradient covers (no image files needed)
+function gradientCover(c0, c1, c2) {
+  const w = 256, h = 256, d = new Uint8Array(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const t = (x + y) / (w + h);
+      let r, g, b;
+      if (t < 0.5) { const f = t / 0.5; r = c0[0] + (c1[0] - c0[0]) * f; g = c0[1] + (c1[1] - c0[1]) * f; b = c0[2] + (c1[2] - c0[2]) * f; }
+      else { const f = (t - 0.5) / 0.5; r = c1[0] + (c2[0] - c1[0]) * f; g = c1[1] + (c2[1] - c1[1]) * f; b = c1[2] + (c2[2] - c1[2]) * f; }
+      const o = (y * w + x) * 4;
+      d[o] = r | 0; d[o + 1] = g | 0; d[o + 2] = b | 0; d[o + 3] = 255;
+    }
+  }
+  return { w, h, d };
+}
+const _palettes = [
+  [255,126,95],[254,180,123],[106,17,203],
+  [15,32,39],[44,83,100],[32,58,67],
+  [178,7,16],[122,10,20],[26,0,0],
+  [5,117,230],[0,242,96],[0,0,0],
+  [253,203,241],[230,222,233],[154,134,201],
+  [58,28,113],[215,109,119],[255,175,123],
+  [20,30,48],[36,59,85],[0,201,255],
+  [35,37,38],[65,67,69],[191,149,63],
+];
 const covers = [];
-for (let i = 1; i <= 8; i++) covers.push(decodePNG(fs.readFileSync(ROOT + '/ui-mockups/covers/0' + i + '.png')));
+for (let i = 0; i < 8; i++) covers.push(gradientCover(_palettes[i * 3], _palettes[i * 3 + 1], _palettes[i * 3 + 2]));
 
 // ---------------------------------------------------------------- icons
 function playIcon(cv, cx, cy, size, rgba) {

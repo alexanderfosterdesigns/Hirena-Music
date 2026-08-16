@@ -24,9 +24,10 @@ import 'package:hirena_music/ui/widgets/track_row.dart';
 ///
 /// (This test always "passes" — its purpose is to emit the PNGs.)
 Future<void> main() async {
+  TestWidgetsFlutterBinding.ensureInitialized();
   goldenFileComparator = _ScreenshotComparator('screenshots');
 
-  await _loadFonts();
+  setUpAll(_loadFonts);
 
   testWidgets('capture all screens', (tester) async {
     tester.view.physicalSize = const Size(2880, 1800);
@@ -34,7 +35,11 @@ Future<void> main() async {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    final covers = await _makeCovers();
+    // Generate cover art under real async (engine image encode/decode).
+    final covers = <MemoryImage>[];
+    await tester.runAsync(() async {
+      covers.addAll(await _makeCovers());
+    });
 
     final screens = <String, Widget>{
       '01-home.png': _home(covers),
@@ -74,26 +79,26 @@ class _ScreenshotComparator implements GoldenFileComparator {
 }
 
 Future<void> _capture(WidgetTester tester, String name, Widget widget) async {
-  await tester.runAsync(() async {
-    await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: HTheme.dark(),
-        home: Scaffold(
-          backgroundColor: HColors.canvas,
-          body: RepaintBoundary(
-            key: ValueKey(name),
-            child: SizedBox(width: 1440, height: 900, child: widget),
-          ),
+  await tester.pumpWidget(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: HTheme.dark(),
+      home: Scaffold(
+        backgroundColor: HColors.canvas,
+        body: RepaintBoundary(
+          key: ValueKey(name),
+          child: SizedBox(width: 1440, height: 900, child: widget),
         ),
       ),
-    );
-    await tester.pump();
-    // Let MemoryImage covers decode and the hero's Ken Burns tick once.
-    await Future<void>.delayed(const Duration(milliseconds: 80));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 140));
-  });
+    ),
+  );
+  await tester.pump();
+  // Let MemoryImage covers decode on the real event loop.
+  await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 120)));
+  await tester.pump();
+  // Tick the hero Ken Burns animation once.
+  await tester.pump(const Duration(milliseconds: 140));
+
   await expectLater(find.byKey(ValueKey(name)), matchesGoldenFile(name));
 }
 
@@ -112,25 +117,26 @@ Future<void> _loadFonts() async {
 }
 
 // ---------------------------------------------------------------- cover art
+const _palettes = <List<Color>>[
+  [Color(0xFFFF7E5F), Color(0xFFFEB47B), Color(0xFF6A11CB)],
+  [Color(0xFF0F2027), Color(0xFF2C5364), Color(0xFF203A43)],
+  [Color(0xFFB20710), Color(0xFF7A0A14), Color(0xFF1A0000)],
+  [Color(0xFF0575E6), Color(0xFF00F260), Color(0xFF000000)],
+  [Color(0xFFFDCBF1), Color(0xFFE6DEE9), Color(0xFF9A86C9)],
+  [Color(0xFF3A1C71), Color(0xFFD76D77), Color(0xFFFFAF7B)],
+  [Color(0xFF141E30), Color(0xFF243B55), Color(0xFF00C9FF)],
+  [Color(0xFF232526), Color(0xFF414345), Color(0xFFBF953F)],
+];
+
 Future<List<MemoryImage>> _makeCovers() async {
-  const palettes = <List<Color>>[
-    [Color(0xFFFF7E5F), Color(0xFFFEB47B), Color(0xFF6A11CB)],
-    [Color(0xFF0F2027), Color(0xFF2C5364), Color(0xFF203A43)],
-    [Color(0xFFB20710), Color(0xFF7A0A14), Color(0xFF1A0000)],
-    [Color(0xFF0575E6), Color(0xFF00F260), Color(0xFF000000)],
-    [Color(0xFFFDCBF1), Color(0xFFE6DEE9), Color(0xFF9A86C9)],
-    [Color(0xFF3A1C71), Color(0xFFD76D77), Color(0xFFFFAF7B)],
-    [Color(0xFF141E30), Color(0xFF243B55), Color(0xFF00C9FF)],
-    [Color(0xFF232526), Color(0xFF414345), Color(0xFFBF953F)],
-  ];
   final out = <MemoryImage>[];
-  for (final palette in palettes) {
-    out.add(await _gradientCover(palette));
+  for (final palette in _palettes) {
+    out.add(MemoryImage(await _gradientCoverPng(palette)));
   }
   return out;
 }
 
-Future<MemoryImage> _gradientCover(List<Color> colors) async {
+Future<Uint8List> _gradientCoverPng(List<Color> colors) async {
   final recorder = ui.PictureRecorder();
   final canvas = ui.Canvas(recorder);
   const size = 512.0;
@@ -144,7 +150,6 @@ Future<MemoryImage> _gradientCover(List<Color> colors) async {
         colors,
       ),
   );
-  // A soft highlight for visual interest.
   canvas.drawCircle(
     const Offset(400, 140),
     130,
@@ -158,7 +163,7 @@ Future<MemoryImage> _gradientCover(List<Color> colors) async {
   final picture = recorder.endRecording();
   final image = await picture.toImage(size.toInt(), size.toInt());
   final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-  return MemoryImage(bytes!.buffer.asUint8List());
+  return bytes!.buffer.asUint8List();
 }
 
 // ---------------------------------------------------------------- sample data
@@ -287,7 +292,7 @@ Widget _search(List<MemoryImage> covers) {
                 children: [
                   for (var i = 0; i < 5; i++)
                     PosterCard(
-                      title: _track(i, 'Album ${i + 1}', _artists[i % 6], 'Album ${i + 1}').albumTitle,
+                      title: 'Album ${i + 1}',
                       subtitle: _artists[i % 6],
                       image: covers[i % covers.length],
                       width: 148,
@@ -423,9 +428,9 @@ Widget _player(List<MemoryImage> covers) {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(Icons.shuffle_rounded, color: Colors.white70),
                 SizedBox(width: 28),
                 Icon(Icons.skip_previous_rounded, color: Colors.white, size: 34),
