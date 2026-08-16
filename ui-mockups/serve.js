@@ -48,7 +48,7 @@ ${gallery(
 ${gallery(
   'Static mockups',
   mock,
-  'Hand-drawn reference mockups (NOT Flutter output) — for quick preview only.',
+  'Hand-drawn reference mockups (NOT Flutter output) — for quick preview only. <a href="/ui-renders.zip" download>Download all (zip)</a>.',
 )}
 <p style="color:#666;margin-top:32px">How to get real renders: run <code>flutter test test/screenshots/screenshots_test.dart</code> on your machine, or enable the committed <code>.github/workflows/ci.yml</code> to upload them as a CI artifact.</p>
 </body></html>`;
@@ -66,9 +66,15 @@ const server = http.createServer((req, res) => {
     file = path.join(screensDir, path.basename(url.pathname));
   } else if (url.pathname.startsWith('/mockups/')) {
     file = path.join(mockDir, path.basename(url.pathname));
+  } else if (url.pathname === '/ui-renders.zip') {
+    file = path.join(ROOT, 'ui-renders.zip');
   }
-  if (file && fs.existsSync(file) && file.endsWith('.png')) {
-    res.writeHead(200, { 'Content-Type': 'image/png' });
+  if (file && fs.existsSync(file)) {
+    const ext = path.extname(file);
+    res.writeHead(200, {
+      'Content-Type': ext === '.png' ? 'image/png' : 'application/zip',
+      'Content-Disposition': 'attachment; filename="' + path.basename(file) + '"',
+    });
     fs.createReadStream(file).pipe(res);
     return;
   }
