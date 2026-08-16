@@ -28,3 +28,7 @@ Thumbs.db
 # lacks the `workflows` permission. Remove these lines and commit it from an
 # account with that permission to enable CI.
 .github/workflows/
+
+# UI mockup renders (inspection artifacts — not source)
+ui-mockups/covers/
+ui-mockups/*.png
