@@ -61,7 +61,7 @@ final class DeezerGateway {
     _session = null;
 
     final res = await _gwCall('deezer.getUserData', {}, apiToken: null);
-    if (res is Err) return res;
+    if (res is Err) return Err(res.error);
 
     final results = (res as Ok<Map<String, dynamic>>).value;
     final user = results['USER'];
@@ -97,7 +97,7 @@ final class DeezerGateway {
 
   Future<Result<Track>> track(int id) async {
     final res = await _gwCall('deezer.pageTrack', {'SNG_ID': id});
-    if (res is Err) return res;
+    if (res is Err) return Err(res.error);
     final results = (res as Ok<Map<String, dynamic>>).value;
     final data = results['DATA'];
     if (data is! Map) {
@@ -108,7 +108,7 @@ final class DeezerGateway {
 
   Future<Result<List<Track>>> tracks(List<int> ids) async {
     final res = await _gwCall('song.getListData', {'SNG_IDS': ids});
-    if (res is Err) return res;
+    if (res is Err) return Err(res.error);
     final results = (res as Ok<Map<String, dynamic>>).value;
     final data = results['data'];
     if (data is! List) return const Ok([]);
@@ -118,7 +118,7 @@ final class DeezerGateway {
   Future<Result<(Album, List<Track>)>> album(int id) async {
     final res = await _gwCall('deezer.pageAlbum',
         {'ALB_ID': id, 'lang': 'en', 'header': true, 'tab': 0});
-    if (res is Err) return res;
+    if (res is Err) return Err(res.error);
     final results = (res as Ok<Map<String, dynamic>>).value;
     final data = results['DATA'];
     final songs = results['SONGS'];
@@ -132,7 +132,7 @@ final class DeezerGateway {
   Future<Result<(Artist, List<Track>, List<Album>)>> artist(int id) async {
     final res = await _gwCall('deezer.pageArtist',
         {'ART_ID': id, 'lang': 'en', 'header': true, 'tab': 0});
-    if (res is Err) return res;
+    if (res is Err) return Err(res.error);
     final results = (res as Ok<Map<String, dynamic>>).value;
     final artistData = results['ARTIST'];
     if (artistData is! Map) {
@@ -148,7 +148,7 @@ final class DeezerGateway {
   Future<Result<(Playlist, List<Track>)>> playlist(int id) async {
     final res = await _gwCall('deezer.pagePlaylist',
         {'PLAYLIST_ID': id, 'lang': 'en', 'header': true, 'tab': 0});
-    if (res is Err) return res;
+    if (res is Err) return Err(res.error);
     final results = (res as Ok<Map<String, dynamic>>).value;
     final data = results['DATA'];
     if (data is! Map) {
@@ -166,20 +166,20 @@ final class DeezerGateway {
       'artist_suggest': true,
       'top_tracks': true,
     });
-    if (res is Err) return res;
+    if (res is Err) return Err(res.error);
     return Ok(SearchResults.fromGw((res as Ok<Map<String, dynamic>>).value));
   }
 
   Future<Result<Charts>> charts() async {
     final res = await _gwCall('deezer.getCharts', {});
-    if (res is Err) return res;
+    if (res is Err) return Err(res.error);
     return Ok(Charts.fromGw((res as Ok<Map<String, dynamic>>).value));
   }
 
   Future<Result<List<Album>>> discography(int artistId) async {
     final res = await _gwCall('album.getDiscography',
         {'ART_ID': artistId, 'discography_mode': 'all', 'nb': 200, 'nb_songs': 0, 'start': 0});
-    if (res is Err) return res;
+    if (res is Err) return Err(res.error);
     final results = (res as Ok<Map<String, dynamic>>).value;
     return Ok(_parseList(results['data'], Album.fromGw));
   }
@@ -187,7 +187,7 @@ final class DeezerGateway {
   /// Deezer's own "similar tracks" signal (used as a recommendation nominator).
   Future<Result<List<Track>>> similarTracks(int trackId) async {
     final res = await _gwCall('deezer.pageTrack', {'SNG_ID': trackId});
-    if (res is Err) return res;
+    if (res is Err) return Err(res.error);
     final results = (res as Ok<Map<String, dynamic>>).value;
     final similar = results['SIMILAR_TRACKS'];
     return Ok(_parseTrackList(similar));
