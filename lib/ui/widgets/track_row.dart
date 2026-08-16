@@ -66,7 +66,7 @@ class _TrackRowState extends State<TrackRow> {
                 else if (widget.index != null)
                   Center(
                     child: Text('${widget.index! + 1}',
-                        style: HType.metadata.copyWith(fontVariant: [FontFeature.tabularFigures()])),
+                        style: HType.metadata),
                   )
                 else
                   Artwork(coverMd5: widget.track.albumCoverMd5,
@@ -106,7 +106,7 @@ class _TrackRowState extends State<TrackRow> {
                   onPressed: widget.onToggleSave,
                 ),
               Text(formatDuration(Duration(seconds: widget.track.duration)),
-                  style: HType.metadata.copyWith(fontVariant: [FontFeature.tabularFigures()])),
+                  style: HType.metadata),
             ],
           ),
           onTap: widget.onPlay,

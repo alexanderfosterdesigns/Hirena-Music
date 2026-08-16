@@ -23,3 +23,8 @@ Thumbs.db
 
 # Misc
 *.log
+
+# CI workflow kept locally but not committed: the Arena GitHub App token
+# lacks the `workflows` permission. Remove these lines and commit it from an
+# account with that permission to enable CI.
+.github/workflows/

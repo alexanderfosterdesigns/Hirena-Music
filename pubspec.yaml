@@ -22,6 +22,7 @@ dependencies:
 
   # Audio
   just_audio: ^0.9.38
+  just_audio_windows: ^0.2.2
 
   # Storage & cache
   shared_preferences: ^2.2.3
@@ -30,6 +31,7 @@ dependencies:
   cached_network_image: ^3.3.1
 
   # Utilities
+  path: ^1.9.0
   uuid: ^4.4.0
   logging: ^1.2.0
 
