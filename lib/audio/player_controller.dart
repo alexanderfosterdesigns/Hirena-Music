@@ -116,6 +116,7 @@ final class PlayerController extends ChangeNotifier {
     _pos = _order.indexOf(startIndex);
     if (_pos < 0) _pos = 0;
     await _load();
+    await _player.play();
   }
 
   /// Plays a single track immediately (replacing the queue with a one-track
@@ -152,7 +153,7 @@ final class PlayerController extends ChangeNotifier {
 
   Future<void> seek(Duration d) => _player.seek(d);
 
-  Future<void> setVolume(double v) => _player.setVolume(v.clamp(0, 1));
+  Future<void> setVolume(double v) => _player.setVolume(v.clamp(0.0, 1.0).toDouble());
 
   Future<void> setRepeat(RepeatMode m) async {
     _repeat = m;
@@ -166,6 +167,7 @@ final class PlayerController extends ChangeNotifier {
 
   Future<void> setShuffle(ShuffleMode m) async {
     final currentId = _current()?.id;
+    final wasPlaying = _playing;
     _shuffle = m;
     _order = _computeOrder(m, currentId == null ? -1 : _pool.indexWhere((p) => p.id == currentId));
     final oldPos = _pos;
@@ -174,6 +176,7 @@ final class PlayerController extends ChangeNotifier {
         : (_order.indexWhere((i) => _pool[i].id == currentId));
     if (_pos < 0) _pos = oldPos < _order.length ? oldPos : 0;
     await _load();
+    if (wasPlaying) await _player.play();
     _notify();
   }
 
@@ -192,6 +195,7 @@ final class PlayerController extends ChangeNotifier {
 
   Future<void> _load() async {
     if (_order.isEmpty) return;
+    if (_pos < 0 || _pos >= _order.length) _pos = 0;
     final sources = <AudioSource>[];
     for (final i in _order) {
       final item = _pool[i];
